@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import './widgets/transaction_list.dart';
 import './widgets/new_transaction.dart';
 import './models/transaction.dart';
+import './widgets/chart.dart';
 
 void main() => runApp(MyApp());
 
@@ -11,7 +12,19 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Personal Expenses',
-      theme: ThemeData(primarySwatch: Colors.purple, accentColor: Colors.amber),
+      theme: ThemeData(
+          primarySwatch: Colors.purple,
+          accentColor: Colors.amber,
+          fontFamily: 'Quicksand',
+          textTheme: ThemeData.light().textTheme.copyWith(
+              headline6: TextStyle(
+                  fontFamily: 'OpenSans',
+                  fontSize: 18,
+                  color: Colors.purple,
+                  fontWeight: FontWeight.bold)),
+          appBarTheme: AppBarTheme(
+              textTheme: ThemeData.light().textTheme.copyWith(
+                  headline6: TextStyle(fontFamily: 'OpenSans', fontSize: 20)))),
       home: MyHomePage(),
     );
   }
@@ -29,6 +42,12 @@ class _MyHomePageState extends State<MyHomePage> {
     Transaction(
         id: 't2', title: 'Groceries', amount: 16.53, date: DateTime.now())
   ];
+
+  List<Transaction> get recentTransactions {
+    return transactions.where((tx) {
+      return tx.date.isAfter(DateTime.now().subtract(Duration(days: 7)));
+    }).toList();
+  }
 
   void _addNewTransaction(String title, double amount) {
     final newTransaction = Transaction(
@@ -62,11 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
-              Card(
-                child: Container(width: double.infinity, child: Text('CHART!')),
-                color: Theme.of(context).primaryColor,
-                elevation: 5,
-              ),
+              Chart(recentTransactions),
               TransactionList(transactions),
             ])),
         floatingActionButton: FloatingActionButton(
